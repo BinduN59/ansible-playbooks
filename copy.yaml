@@ -1,0 +1,13 @@
+---
+- hosts: 192.168.56.15
+  become: true
+  tasks:
+    - name: copy files
+      copy: 
+        src: /opt/tomcat/apache-tomcat-9.0.97
+        dest: /opt/tomcat/
+    
+    - name: Remove source file after copying
+      file:
+        path: /opt/tomcat/apache-tomcat-9.0.97
+        state: absent

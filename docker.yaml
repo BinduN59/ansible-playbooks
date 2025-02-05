@@ -1,0 +1,47 @@
+---
+- name: Install docker 
+  hosts: 192.168.56.5
+  become: true
+  tasks:
+    - name: update packages
+      apt:
+        update_cache: yes
+    
+    - name: install packages
+      apt:
+        name:  "{{ items }}"
+        state: present
+      loop:
+        - ca-certificates 
+        - curl
+    
+    - name: Add gpg key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    
+    - name: docker repository
+      apt_repository:
+        repo: 'deb https://download.docker.com/linux/ubuntu'
+        state: present
+    
+    - name: update apt packages again
+      apt:
+        update_cache: yes
+    
+    - name: Install docker packages
+      apt:
+        name:  "{{ items }}"
+        state: present
+      loop:
+        - docker-ce  
+        - docker-ce-cli
+        - containerd.io 
+        - docker-buildx-plugin 
+        - docker-compose-plugin
+
+    - name: Add user to the Docker group
+      user:
+        name: bindu
+        groups: docker
+        append: yes

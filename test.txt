@@ -1,0 +1,10 @@
+subnet : 10.20.1.0/24
+docker network create -name host --subnet 10.20.1.0/24
+docker container rename oldcontainer newc
+docker commit containerid imgname latest
+kubectl get pods -o wide
+kubectl exec -it podname -- /bin/bash
+
+kubectl get logs podname
+
+kubectl setimage deployment nginx=deployment nginxcontainer=nginx:latest --record

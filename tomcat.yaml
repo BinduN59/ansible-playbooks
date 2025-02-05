@@ -1,0 +1,38 @@
+---
+- hosts: 192.168.56.20
+  become: true
+  tasks:
+    - name: update packages
+      apt:
+        update_cache: yes
+    
+    - name: Install java
+      apt: 
+       name: openjdk-17-jre-headless
+       state: started
+    
+    - name: Create a directory, if it doesn't exist
+      file:
+        path: /opt/tomcat
+        state: directory
+        mode: u=rwx,g=rw,o=rwx
+    
+    - name: Install Tomcat
+      unarchive:
+        src: https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.97/bin/c.zip
+        dest: /opt/tomcat
+    
+    - name: Give permissions
+      file: 
+        path: /opt/tomcat/bin/startup.sh
+        mode: u=rwx,g=rw,o=rwx
+
+    
+    - name: run shell script
+      shell: /opt/tomcat/bin/startup.sh
+
+    
+
+
+        
+  

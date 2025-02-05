@@ -1,0 +1,38 @@
+---
+- name : Install Jenkins on target server
+  hosts: webserver
+  become: true
+  tasks:
+    - name: update apt packages
+      apt: 
+        update_cache: yes
+    
+    - name: install java
+      apt: 
+       name: openjdk-17-jre-headless
+       state: started
+    
+    - name: repository key
+      apt_key:
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+        state: present
+    
+    - name: jenkins repository
+      apt_repository:
+        repo: 'deb https://pkg.jenkins.io/debian binary/'
+        state: present
+    
+    - name: update apt packages again
+      apt:
+        update_cache: yes
+    
+    - name: install jenkins
+      apt:
+        name: jenkins
+        state: present
+    
+    - name: very jenkins installation
+      service:
+        name: Jenkins
+        state: started
+      

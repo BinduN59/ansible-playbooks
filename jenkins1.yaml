@@ -1,0 +1,35 @@
+---
+- name : Install Jenkins on target server
+  hosts: webserver
+  become: true
+  tasks:
+    - name: Install wget
+      yum: 
+        name: wget
+        state: present
+    
+    
+    - name: repository key
+      yum_key:
+        url: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+        state: present
+    
+    - name: jenkins repository
+      yum_repository:
+        repo: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        state: present
+    
+    - name: update apt packages again
+      yum:
+        update_cache: yes
+    
+    - name: install jenkins
+      yum:
+        name: jenkins
+        state: present
+    
+    - name: verify jenkins installation
+      service:
+        name: Jenkins
+        state: started
+      

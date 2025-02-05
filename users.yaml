@@ -1,0 +1,17 @@
+---
+- host: 192.168.56.6
+  become: true
+  tasks:
+  - name: Create user
+    user:
+      name: Hima
+      create_home: true
+      shell: /bin/bash
+      comment: "Ansible management Account"
+      expires: -1
+      password: "{{ 'hima' | password_hash('sha512','A512') }}"
+  - name: Setup sudo access
+    copy:
+      dest: /etc/sudoers.d/Hima
+      content: 'Hima ALL=(ALL:ALL) NOPASSWD: ALL'
+      validate: /usr/sbin/visudo -cf %s

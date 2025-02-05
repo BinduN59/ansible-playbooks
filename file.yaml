@@ -1,0 +1,18 @@
+---
+- hosts: 192.168.56.5
+  tasks:
+    - name: Retrieve file status
+      stat:
+        path: /path/to/your/file.txt  
+      register: file_status
+
+    - name: Display message if file exists
+      debug:
+        msg: "The file exists."
+      when: file_status.stat.exists
+
+    - name: Display message if file does not exist
+      debug:
+        msg: "The file does not exist."
+      when: not file_status.stat.exists
+      

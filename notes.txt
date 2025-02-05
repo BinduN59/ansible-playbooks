@@ -1,0 +1,168 @@
+docker container cp /home/bindu/test.sh harsha:/test.sh
+docker container cp sourcedir container:destdir
+docker container create : always requires an --env variable in order for the container to be up and running.
+docker container create --name test --env app_env=production nginx
+docker container diff : Inspects into the container and provides changes/existing files/packages
+
+docker container export testdiff > test.tar
+docker container export -o test.tar testdiff
+docker container export testdiff | tar -xvf -
+
+docker import anyzipfile imagename:latest
+
+
+docker restart: can start both stopped and running containers
+
+ docker container run -d --name aditya -p 8586:80 nginx => web packages , port forwarding is mandatory and only runs in the background
+
+ docker container run -it --name aditya -p 8586:80 ubuntu => OS image , port forwarding is optional -it: intearactive terminal
+
+ docker container stats =>  Displays memory, CPU % and number of PIDs
+ PIDS are directly proportional to heap area/memory  (very important)
+  may result in restarting the docker continuously
+
+docker container top <container name> => displays all processes running in the container with process id and parent process id , CPU . start time and terminal associated with process
+
+
+
+docker network :
+create : 
+connect :
+inspect : 
+disconnect: 
+
+docker run -it --name develop --hostname admin --network harsha --ip 10.20.1.5 ubuntu:24.04
+
+
+Restart n containers in exited state
+for container in $(docker ps -a -q -f "status=exited"); do
+  docker container start "$container"
+done
+
+ps: -f is forcefully
+
+Stop n containers
+
+for i in $(docker ps -aq); do
+  docker container stop "$i"
+done
+
+sudo strace -eopenat kubectl --version
+
+ nginx -t (verifies if nginx is running)
+
+ Replication controller
+ Replica set  --> It is next gen of Replication controller . Replica set will also manages pod life cycle. It can scale up and scale down pod. Only diff comes in its selector support.
+ Daemon set
+ Deployment
+
+package information of a name space:
+kubectl get all -n kube-system
+
+kubectl delete -f replica.yaml
+replicationcontroller "java-webapp-rc" deleted
+service "rep-service" deleted
+
+By running the above command using file name , we can delete rc and svc at the same time.
+
+replica set and daemon set diff . Daemon set doesnt accept replicas option in yaml file.
+
+ kubectl delete all --all
+
+ kubectl get pods -n bindu [here -n refers to namespace]
+
+ replicationcontroller : labels
+ replicaset: matchLabels , replicas (pods count)
+ DaemonSet: matchLabels, no replicas are mentioned in yaml
+
+ kubectl get all -o wide
+
+
+ClusterIP will not change , if service is updated. However , a mew IP is issued , when a service is deleted and recreated.
+ETCD (database) is where the pod lifecycle/info is stored. ETCD is one of the databases in kubernetes and can determine the Pods health.
+
+container always starts from kubelet
+
+pod eviction: pod will be running successfully once, and when the worker node is downtime or out of resources, network failure 
+              In this case new pod might not be up. even image is pulled , the pod will not be created.
+pod terminating: comes during when pod is dying due to overload or network failure (mainly through disaster)
+
+Pods :
+   watch kubectl get pods
+Service:
+  ClusterIP: default
+  nodeport: staticIP
+  loadbalancer: two pods with same port number and can also have static IP
+Replication controller: Can only run application.
+                        kubectl describe rc <rc metadata name>
+                        kubectl scale rc testrc --replicas 4 ; scale up and down replicas
+                        kubectl get pods --show-labels
+
+Replicaset: Can also browse image , not only application.
+            kubectl describe rs <rs metadata name> ; describes complete replication set.
+            kubectl exec demo-repset-jmgz5 -- ls ; run a command without logging into pod
+            kubectl exec <podname> -c <containername> -- pwd; specifies the path of the container
+            kubectl logs <podname> ; provides logs for that pod
+Deployment:
+            kubectl get deploymentskube
+            kubectl rollout history deployment javawebappdeployment --revision 2 ; specifies the revision
+            kubectl rollout undo deployment javawebappdeployment --to-revision=2; rolls back to revision 2
+            kubectl set image deployment javawebappdeployment javawebappcontainer=dockerhandson/java-web-app:2 --record ; updates image background only , not in the file.
+    
+HPA: Horizontal pod autoscaler ; it will  scales up/down no.of  pod replicas of deployment , RC , RS dynamically based on the metrics of CPU and memory utilization
+Daemonsets: 
+             kubectl get ds 
+Statefull set:
+
+https://github.com/ramakrishna5822/kuberntes-yamlfiles/blob/main/rc.yaml
+
+kubectl apply -f mongo.yaml --dry-run : dry run 
+
+
+
+
+
+ubuntu@master:~$ kubectl get all
+NAME                       READY   STATUS    RESTARTS   AGE
+pod/demo-repset-572dv      1/1     Running   0          82s
+pod/demo-repset-q4kbj      1/1     Running   0          82s
+pod/java-webapp-rc-cxlcj   0/1     Pending   0          3s
+pod/java-webapp-rc-fjj7v   0/1     Pending   0          3s
+pod/java-webapp-rc-v5d5c   0/1     Pending   0          3s
+pod/nodeappds-92hm7        1/1     Running   0          5m12s
+
+NAME                                   DESIRED   CURRENT   READY   AGE
+replicationcontroller/java-webapp-rc   3         3         0       3s
+
+NAME                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/kubernetes       ClusterIP   10.96.0.1       <none>        443/TCP        9m54s
+service/nodeappservice   NodePort    10.98.223.124   <none>        80:32457/TCP   5m12s
+service/rep-service      ClusterIP   10.98.152.222   <none>        80/TCP         3s
+service/repservice       NodePort    10.99.117.48    <none>        80:32345/TCP   81s
+
+NAME                       DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+daemonset.apps/nodeappds   1         1         1       1            1           <none>          5m12s
+
+NAME                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/demo-repset   2         2         2       82s
+
+
+
+Load generator:
+kubectl run -it --rm loadgenerator --image=busybox ; this commands creates a new pod(group of containers) , with an image called busy box, --rm means remove loadgenerator name
+wget -q -O- http://hpaservice   ; wget -q -O- http://<service name> , to call the service locally
+once exit command is used , the loadgenerator pod is deleted .more info below:
+  Session ended, resume using 'kubectl attach loadgenerator -c loadgenerator -i -t' command when the pod is running ; this will not work if the pod is deleted.
+  pod "loadgenerator" deleted
+
+
+
+
+
+
+
+
+
+
+
+

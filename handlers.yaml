@@ -1,0 +1,19 @@
+---
+- hosts: 192.168.56.15
+  become: true
+  tasks:
+    - name: install apache2
+      apt:
+        name: apache2
+        state: present
+    - name: copy files
+      copy:
+        src: index.html
+        dest: /var/www/html/index.html
+      notify: 
+        - restart apache servers
+  handlers:
+    - name: restart apache servers
+      service:
+        name: apache2
+        state: restarted

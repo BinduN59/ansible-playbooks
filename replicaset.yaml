@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+   name: demo-repset
+spec:
+  replicas: 2
+  selector:
+    matchLabels: 
+      app: maven-webapp
+  template:
+    metadata:
+      name: maven-webapp-pod
+      labels: 
+        app: maven-webapp
+    spec:
+      containers:
+      - name: maven-webapp-container
+        image: dockerhanson/maven-web-app
+        ports:
+        - containerPort: 8080
