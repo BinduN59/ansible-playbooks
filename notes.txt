@@ -156,8 +156,81 @@ once exit command is used , the loadgenerator pod is deleted .more info below:
   pod "loadgenerator" deleted
 
 
+Volumes:
+New NFS sever:
+created an aws server
+set the hostname
+install nfs server through apt 
+create a new dir /mnt/share/
+change the ownership. chown nobody:nogroup /mnt/share/
+change the permissions . chmod 777
+edit the exports file . vi  /etc/exports
+/mnt/share/ *(rw,sync,no_subtree_check,no_root_squash)
+sudo exportfs -a ; export filesystem
+master node install nfs-common.
+worker node install nfs-common
+
+Once everything is done , replica set , 
+volumes
+hostpath should have nfs path and server ip .
+
+ volumes:-
+      - name: mongodbhostpath
+        nfs:
+          server: 172.31.13.107
+          path: /mnt/share
+
+volumes:
+   name:
+   ebsBlockStore:
+      server:
+      path:
 
 
+PV, PVC client:
+
+Precision volume is a piece of storage , PV exists independently from pods which consumes PV.
+ PV represents some storage which can be 
+ Options:
+  hostpath => 
+  nfs => always have PVs as ReadWriteMany
+  ebsBlockStore
+  azureFile
+  azureDisk --etc 
+
+PV :  kubectl get pv
+  two types 
+  Static volumes:
+    This is created manually, as a K8s admin you can create PV manually , which can be used/claimed by pods whenever required some storage 
+  Dynamic Volumes:
+    In some circumstances a pod could require a PV that doesnt exist. In those cases , it is possible to have k8s provisioned the volume as needed. If storage classes 
+    were configured to demonstrate where the dynamic PVs should be build . 
+
+StorageClass(volume provisioner): kubectl get storageclass
+   It is piece of code which will create volumes(PV). Whenever, you have PVC request and you dont have PV available in the cluster.    
+  Types:
+  NFS provisioner:
+    aws-ebs 
+    azure
+    gpe
+
+
+
+PVC:
+  If a pod requires storage (volumes)
+  pod will get an access to the storage(volumes) with the help of PVC.
+  You need to make a volume , request by creating PVC by specifying size , access mode 
+  PVC will be associated with PV 
+
+
+
+
+
+
+
+
+
+This post will focus on static volumes for now.
 
 
 
