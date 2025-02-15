@@ -223,16 +223,15 @@ PVC:
   PVC will be associated with PV 
 
 
-
-
-
-
-
-
-
 This post will focus on static volumes for now.
 
+02/12
 
+If a PV is claimed by a PVC and have to delete PV . Then the PVC should be deleted first and then delete the PV.
+
+02/13
+
+Stateful sets , config maps , secret maps 
 
 
 
